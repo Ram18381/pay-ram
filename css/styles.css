@@ -1,0 +1,12 @@
+/* Pay-RAm – custom styles
+   Tailwind CDN handles most styling; add project-specific overrides here. */
+
+/* Smooth modal transitions */
+#employee-modal {
+    transition: opacity 0.2s ease;
+}
+
+/* Ensure the chart canvas doesn't overflow its container */
+#payroll-chart {
+    max-width: 100%;
+}
