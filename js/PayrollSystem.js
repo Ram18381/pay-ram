@@ -12,7 +12,13 @@ class PayrollSystem {
     async loadFromServer() {
         try {
             const res  = await fetch(API_BASE);
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                console.warn('Server returned an error:', errData);
+                return;
+            }
             const data = await res.json();
+            if (!Array.isArray(data)) return;
 
             this.employees.clear();
             data.forEach(empData => {
@@ -31,7 +37,6 @@ class PayrollSystem {
             });
         } catch (err) {
             console.error('Failed to load employees:', err);
-            alert('Could not connect to the server. Is it running?');
         }
     }
 
