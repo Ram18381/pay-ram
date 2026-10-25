@@ -18,9 +18,31 @@ app.use(express.static(path.join(__dirname, '..')));
 // ── API Routes ────────────────────────────────────────────────────────────────
 app.use('/api/employees', employeeRoutes);
 
-// ── Health check ──────────────────────────────────────────────────────────────
+// ── Health & Diagnostics ──────────────────────────────────────────────────────
+const pool = require('./db');
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/db-test', async (req, res) => {
+    try {
+        const client = await pool.connect();
+        const testRes = await client.query('SELECT NOW() as now');
+        client.release();
+        res.json({
+            connected: true,
+            now: testRes.rows[0].now,
+            hasDbUrl: Boolean(process.env.DATABASE_URL),
+            dbUrlType: process.env.DATABASE_URL ? (process.env.DATABASE_URL.includes('.render.com') ? 'external' : 'internal') : 'none'
+        });
+    } catch (err) {
+        res.status(500).json({
+            connected: false,
+            error: err.message || String(err),
+            hasDbUrl: Boolean(process.env.DATABASE_URL),
+            dbUrlType: process.env.DATABASE_URL ? (process.env.DATABASE_URL.includes('.render.com') ? 'external' : 'internal') : 'none'
+        });
+    }
 });
 
 // ── Fallback: serve index.html for any non-API route ─────────────────────────
