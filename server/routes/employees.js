@@ -40,8 +40,8 @@ router.get('/', async (req, res) => {
 
         res.json(employees);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to fetch employees' });
+        console.error('Fetch employees error:', err.message);
+        res.status(500).json({ error: 'Failed to fetch employees', details: err.message });
     }
 });
 
@@ -78,8 +78,8 @@ router.post('/', async (req, res) => {
         if (err.code === '23505') {
             return res.status(409).json({ error: 'Employee ID already exists' });
         }
-        console.error(err);
-        res.status(500).json({ error: 'Failed to create employee' });
+        console.error('Create employee error:', err.message);
+        res.status(500).json({ error: 'Failed to create employee', details: err.message });
     }
 });
 
@@ -96,8 +96,8 @@ router.delete('/:id', async (req, res) => {
         }
         res.json({ message: 'Employee deleted', id: req.params.id });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to delete employee' });
+        console.error('Delete employee error:', err.message);
+        res.status(500).json({ error: 'Failed to delete employee', details: err.message });
     }
 });
 
@@ -157,8 +157,8 @@ router.post('/:id/hours', async (req, res) => {
         });
     } catch (err) {
         await client.query('ROLLBACK');
-        console.error(err);
-        res.status(500).json({ error: 'Failed to add hours' });
+        console.error('Add hours error:', err.message);
+        res.status(500).json({ error: 'Failed to add hours', details: err.message });
     } finally {
         client.release();
     }
